@@ -6,10 +6,10 @@ exports.up = function(knex, Promise) {
     table.string('name');
     table.string('slug');
     table.string('uri');
-    table.string('owner');
+    table.integer('owner').references('id').inTable('users');
   }).createTable('time_entries', function (table) {
     table.integer('duration');
-    table.string('user');
+    table.integer('users').references('id').inTable('users');
     table.integer('project').references('id').inTable('projects');
     table.integer('activity').references('id').inTable('activity');
     table.string('notes');
@@ -20,6 +20,9 @@ exports.up = function(knex, Promise) {
     table.integer('id').primary();
     table.string('name');
     table.string('slug');
+  }).createTable('users', function (table) {
+    table.increments('id');
+    table.string('user_name');
   });
 };
 
