@@ -1,0 +1,25 @@
+{
+  "name": "timesync",
+  "version": "0.0.0",
+  "description": "TimeSync time tracker implemented in js",
+  "main": "app.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tschuy/timesync.git"
+  },
+  "keywords": [
+    "time",
+    "tracker"
+  ],
+  "author": "OSU Open Source Lab <support@osuosl.org>",
+  "license": "Apache 2",
+  "bugs": {
+    "url": "https://github.com/tschuy/timesync/issues"
+  }
+}
