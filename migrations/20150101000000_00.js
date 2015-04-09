@@ -22,7 +22,7 @@ exports.up = function(knex, Promise) {
     table.string('slug');
   }).createTable('users', function (table) {
     table.increments('id');
-    table.string('user_name');
+    table.string('username');
   });
 };
 
