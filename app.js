@@ -11,13 +11,17 @@ app.use(knex({
   })
 )
 
-app.use(_.get('/:userid', function *(userid) {
+app.use(_.get('/users/:userid', function *(userid) {
     this.body = {
       profile: yield this.knex('users').where('id', userid)
     };
 }));
 
-app.use(_.post('/add/user', function *() {
+app.use(_.get('/users', function *() {
+    this.body = yield this.knex('users');
+}));
+
+app.use(_.post('/users/add', function *() {
     this.body = {
       profile: yield this.knex('users').insert({username: this.request.query['username']})
     };
