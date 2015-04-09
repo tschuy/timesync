@@ -19,6 +19,9 @@ function createSlugFrom(name) {
         ;
 }
 
+// TODO: catch uniqueness errors and send back error response
+// TOOD: add updating
+
 // Users
 app.use(_.get('/users/:userid', function *(userid) {
     this.body = (yield this.knex('users').where('id', userid))[0];
@@ -94,6 +97,7 @@ app.use(_.post('/time/add', function *() {
         // TODO: fuzzy matching
         activity_id = (yield this.knex('activities').where('slug', activity))[0].id;
     }
+    // TODO: fuzzy matching
     project_id = (yield this.knex('projects').where('slug', project))[0].id;
     user_id = (yield this.knex('users').where('username', user))[0].id;
     duration = this.request.query['duration'] * 60; // convert duration from minutes to seconds
