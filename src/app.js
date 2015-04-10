@@ -45,8 +45,6 @@ function errorInvalidForeignKey(object) {
     });
 }
 
-// TODO: add updating
-
 // Users
 app.use(_.get('/users/:userid', function *(userid) {
     var user = (yield this.knex('users').where('id', userid))[0];
@@ -74,6 +72,41 @@ app.use(_.post('/users/add', function *() {
         }
     }
 }));
+
+app.use(_.post('/users/update', function *() {
+    try {
+        var id = (yield this.knex('users')
+                   .select('id')
+                   .where({
+                     username: this.request.query.username
+                   })
+                 )[0];
+        if (id === undefined) {
+            this.body = errorObjectNotFound(this.request.query.username);
+            this.status = 404;
+            return;
+        }
+        yield this.knex('users')
+          .update({
+            username: this.request.query.new_username
+          })
+          .where({
+            'id': id
+          }));
+
+        this.body = id;
+    } catch(error) {
+        if(error.errno == DATABASE_SAVE_ERROR) {
+            this.body = errorDatabaseSaveFailed(String(error));
+            this.status = 400;
+            return;
+        } else {
+            throw(error);
+        }
+    }
+}));
+
+
 
 // Projects
 app.use(_.get('/projects', function *() {
