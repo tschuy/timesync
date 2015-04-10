@@ -34,4 +34,11 @@ describe('api', function() {
     });
   });
 
+  describe('GET /users', ()=> {
+    it('should return the requested username', (cb) => {
+      user = request.get('/users/1').expect(200, cb);
+    });
+  });
+
+
 });
