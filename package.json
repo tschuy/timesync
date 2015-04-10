@@ -10,7 +10,7 @@
     "start": "node --harmony ./src/app.js",
     "migrate": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
-    "test": "./node_modules/.bin/mocha --harmony tests/test_routes.js"
+    "test": "./node_modules/.bin/mocha --harmony tests/integration"
   },
   "repository": {
     "type": "git",
