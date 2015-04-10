@@ -92,7 +92,7 @@ app.use(_.post('/users/update', function *() {
           })
           .where({
             'id': id
-          }));
+          });
 
         this.body = id;
     } catch(error) {
