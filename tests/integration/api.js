@@ -19,6 +19,7 @@ describe('api', function() {
       });
   });
 
+  // TODO: This is broken. Just recreate the DB between tests.
   afterEach(() => {
     return knex.schema
                .dropTable('projects')
@@ -36,7 +37,7 @@ describe('api', function() {
 
   describe('GET /users', ()=> {
     it('should return the requested username', (cb) => {
-      user = request.get('/users/1').expect(200, cb);
+      user = request.get('/users/42').expect(404, cb);
     });
   });
 
