@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "0.12"
+# command to install dependencies
+install:
+  - "npm install --dev"
+
+# command to run tests
+script: 'npm test'
+before_script:
+  - 'jshint ./src'
+  - 'jshint ./tests'
