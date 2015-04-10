@@ -45,7 +45,7 @@ function errorInvalidForeignKey(object) {
     });
 }
 
-// TOOD: add updating
+// TODO: add updating
 
 // Users
 app.use(_.get('/users/:userid', function *(userid) {
