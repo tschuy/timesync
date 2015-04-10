@@ -1,0 +1,23 @@
+{  
+   "activities":[  
+      {  
+         "name":"Documentation",
+         "slug":"doc"
+      },
+      {  
+         "name":"Development",
+         "slug":"dev"
+      },
+      {  
+         "name":"Systems",
+         "slug":"sys"
+      }
+   ],
+   "users":[  
+      {  
+         "username":"deanj"
+      },
+      {  
+         "username":"tschuy"
+      }
+   ]}
