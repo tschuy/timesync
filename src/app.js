@@ -12,7 +12,7 @@ app.use(knex({
     }
 }));
 
-var UNIQUE_CONSTRAINT_ERROR = 19;
+var DATABASE_SAVE_ERROR = 19;
 
 // strip non-alphanumeric, non-hyphens
 function createSlugFrom(name) {
@@ -65,7 +65,7 @@ app.use(_.post('/users/add', function *() {
 
         this.body = yield this.knex('users').where('id', id);
     } catch(error) {
-        if(error.errno == UNIQUE_CONSTRAINT_ERROR) {
+        if(error.errno == DATABASE_SAVE_ERROR) {
             this.body = errorDatabaseSaveFailed(String(error));
             this.status = 400;
             return;
@@ -104,7 +104,7 @@ app.use(_.post('/projects/add', function *() {
 
         this.body = yield this.knex('projects').where('id', id);
     } catch(error) {
-        if(error.errno == UNIQUE_CONSTRAINT_ERROR) {
+        if(error.errno == DATABASE_SAVE_ERROR) {
             this.body = errorDatabaseSaveFailed(String(error));
             this.status = 400;
             return;
@@ -135,7 +135,7 @@ app.use(_.post('/activities/add', function *() {
 
         this.body = yield this.knex('activities').where('id', id);
     } catch(error) {
-        if(error.errno == UNIQUE_CONSTRAINT_ERROR) {
+        if(error.errno == DATABASE_SAVE_ERROR) {
             this.body = errorDatabaseSaveFailed(String(error));
             this.status = 400;
             return;
@@ -216,7 +216,7 @@ app.use(_.post('/time/add', function *() {
 
         this.body = yield this.knex('time_entries').where('id', id);
     } catch(error) {
-        if(error.errno == UNIQUE_CONSTRAINT_ERROR) {
+        if(error.errno == DATABASE_SAVE_ERROR) {
             this.body = errorDatabaseSaveFailed(String(error));
             this.status = 400;
             return;
