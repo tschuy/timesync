@@ -1,7 +1,7 @@
 var koa = require('koa')
 , _ = require('koa-route')
 , knex = require('koa-knex');
-var app = koa();
+var app = module.exports = koa();
 
 app.use(knex({
     client: 'sqlite3',
