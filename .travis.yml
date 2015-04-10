@@ -6,9 +6,7 @@ install:
   - "npm install --dev"
 
 # command to run tests
-script:
+script: 'npm test'
+before_script:
   - 'jshint ./src'
   - 'jshint ./tests'
-  - 'jscs ./src'
-  - 'jscs ./tests'
-  - 'npm test'
