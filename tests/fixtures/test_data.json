@@ -1,23 +1,57 @@
-{  
-   "activities":[  
-      {  
+{
+   "activities":[
+      {
          "name":"Documentation",
          "slug":"doc"
       },
-      {  
+      {
          "name":"Development",
          "slug":"dev"
       },
-      {  
+      {
          "name":"Systems",
          "slug":"sys"
       }
    ],
-   "users":[  
-      {  
+   "users":[
+      {
          "username":"deanj"
       },
-      {  
+      {
          "username":"tschuy"
       }
-   ]}
+   ],
+   "projects":[
+      {
+         "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
+         "name":"Ganeti Web Manager",
+         "slug":"gwm",
+         "owner":"users:1"
+      },
+      {
+         "uri":"https:://code.osuosl.org/projects/pgd",
+         "name":"Protein Geometry Database",
+         "slug":"pgd",
+         "owner":"users:0"
+      },
+      {
+         "uri":"https:://github.com/osu-cass/whats-fresh-api",
+         "name":"Whats Fresh",
+         "slug":"wf",
+         "owner":"users:1"
+      }
+   ],
+   "time_entries":[
+     {
+      "duration":12,
+      "user":"users:1",
+      "project":"projects:2",
+      "activity":"activities:1",
+      "notes":"",
+      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "date_worked":null,
+      "created_at":null,
+      "updated_at":null
+     }
+   ]
+}
