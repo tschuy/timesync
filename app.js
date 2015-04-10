@@ -11,6 +11,8 @@ app.use(knex({
   })
 )
 
+var UNIQUE_CONSTRAINT_ERROR = 19;
+
 // strip non-alphanumeric, non-hyphens
 function createSlugFrom(name) {
     return name.toLowerCase()
@@ -19,12 +21,37 @@ function createSlugFrom(name) {
         ;
 }
 
-// TODO: catch uniqueness errors and send back error response
+function errorObjectNotFound(object) {
+    return JSON.stringify({
+        'error': "Object not found",
+        'errno': 1,
+        'text': "Invalid " + object
+    });
+}
+
+function errorDatabaseSaveFailed(sql_error) {
+    return JSON.stringify({
+        'error': "Database save failed",
+        'errno': 2,
+        'text': sql_error
+    });
+}
+
+function errorInvalidForeignKey(object) {
+    return JSON.stringify({
+        'error': "Invalid foreign key",
+        'errno': 3,
+        'text': "Invalid " + object
+    });
+}
+
 // TOOD: add updating
 
 // Users
 app.use(_.get('/users/:userid', function *(userid) {
-    this.body = (yield this.knex('users').where('id', userid))[0];
+    var user = (yield this.knex('users').where('id', userid))[0];
+    if (!user) this.throw(404, errorObjectNotFound('user'));
+    this.body = user;
 }));
 
 app.use(_.get('/users', function *() {
@@ -32,8 +59,20 @@ app.use(_.get('/users', function *() {
 }));
 
 app.use(_.post('/users/add', function *() {
-    var id = (yield this.knex('users').insert({username: this.request.query['username']}))[0];
-    this.body = yield this.knex('users').where('id', id);
+    try {
+        var id = (yield this.knex('users').insert(
+            {username: this.request.query['username']}))[0];
+
+        this.body = yield this.knex('users').where('id', id);
+    } catch(error) {
+        if(error.errno == UNIQUE_CONSTRAINT_ERROR) {
+            this.body = errorDatabaseSaveFailed(String(error));
+            this.status = 400;
+            return;
+        } else {
+            throw(error);
+        }
+    }
 }));
 
 // Projects
@@ -43,21 +82,41 @@ app.use(_.get('/projects', function *() {
 
 app.use(_.post('/projects/add', function *() {
     var slug = this.request.query['slug'];
-    if(! slug) {
-        slug = createSlugFrom(this.request.query['name']);
+    if(! slug) slug = createSlugFrom(this.request.query['name']);
+    try {
+        var owner_id = (yield this.knex('users').where('username', this.request.query['owner']))[0].id;
+    } catch(error) {
+        if(error.name.toString() == 'TypeError') {
+            this.body = errorInvalidForeignKey('owner');
+            this.status = 400;
+            return;
+        } else {
+            throw(error);
+        }
     }
-    owner_id = (yield this.knex('users').where('username', this.request.query['owner']))[0].id;
-    var id = (yield this.knex('projects').insert(
-        {name: this.request.query['name'],
-         slug: slug,
-         uri: this.request.query['uri'],
-         owner: owner_id}))[0];
+    try {
+        var id = (yield this.knex('projects').insert(
+            {name: this.request.query['name'],
+             slug: slug,
+             uri: this.request.query['uri'],
+             owner: owner_id}))[0];
 
-    this.body = yield this.knex('projects').where('id', id);
+        this.body = yield this.knex('projects').where('id', id);
+    } catch(error) {
+        if(error.errno == UNIQUE_CONSTRAINT_ERROR) {
+            this.body = errorDatabaseSaveFailed(String(error));
+            this.status = 400;
+            return;
+        } else {
+            throw(error);
+        }
+    }
 }));
 
 app.use(_.get('/projects/:projectid', function *(projectid) {
-    this.body = (yield this.knex('projects').where('id', projectid))[0];
+    var project = (yield this.knex('projects').where('id', projectid))[0];
+    if (!project) this.throw(404, errorObjectNotFound('project'));
+    this.body = project;
 }));
 
 // Activities
@@ -67,19 +126,28 @@ app.use(_.get('/activities', function *() {
 
 app.use(_.post('/activities/add', function *() {
     var slug = this.request.query['slug'];
-    if(! slug) {
-        // strip non-alphanumeric, non-hyphens
-        slug = createSlugFrom(this.request.query['name']);
-    }
-    var id = (yield this.knex('activities').insert(
-        {name: this.request.query['name'],
-        slug: slug}))[0];
+    if(! slug) slug = createSlugFrom(this.request.query['name']);
+    try {
+        var id = (yield this.knex('activities').insert(
+            {name: this.request.query['name'],
+            slug: slug}))[0];
 
-    this.body = yield this.knex('activities').where('id', id);
+        this.body = yield this.knex('activities').where('id', id);
+    } catch(error) {
+        if(error.errno == UNIQUE_CONSTRAINT_ERROR) {
+            this.body = errorDatabaseSaveFailed(String(error));
+            this.status = 400;
+            return;
+        } else {
+            throw(error);
+        }
+    }
 }));
 
 app.use(_.get('/activities/:activityid', function *(activityid) {
-    this.body = (yield this.knex('activities').where('id', activityid))[0];
+    var activity = (yield this.knex('activities').where('id', activityid))[0];
+    if (!activity) this.throw(404, errorObjectNotFound('activity'));
+    this.body = activity;
 }));
 
 // Time events
@@ -88,36 +156,77 @@ app.use(_.get('/time', function *() {
 }));
 
 app.use(_.post('/time/add', function *() {
-    var activity = this.request.query['activity']; // activity slug
-    var project = this.request.query['project']; // project slug
-    var user = this.request.query['user']; // username
+    var activity = this.request.query['activity'];
+    var project = this.request.query['project'];
+    var user = this.request.query['user'];
 
     var activity_id = null;
     if(activity) {
         // TODO: fuzzy matching
-        activity_id = (yield this.knex('activities').where('slug', activity))[0].id;
+        try {
+            activity_id = (yield this.knex('activities').where('slug', activity))[0].id;
+        } catch(error) {
+            if(error.name.toString() == 'TypeError') {
+                this.body = errorInvalidForeignKey('activity');
+                this.status = 400;
+                return;
+            } else {
+                throw(error);
+            }
+        }
     }
     // TODO: fuzzy matching
-    project_id = (yield this.knex('projects').where('slug', project))[0].id;
-    user_id = (yield this.knex('users').where('username', user))[0].id;
+    try {
+        project_id = (yield this.knex('projects').where('slug', project))[0].id;
+    } catch(error) {
+        if(error.name.toString() == 'TypeError') {
+            this.body = errorInvalidForeignKey('project');
+            this.status = 400;
+            return;
+        } else {
+            throw(error);
+        }
+    }
+    try {
+        user_id = (yield this.knex('users').where('username', user))[0].id;
+    } catch(error) {
+        if(error.name.toString() == 'TypeError') {
+            this.body = errorInvalidForeignKey('user');
+            this.status = 400;
+            return;
+        } else {
+            throw(error);
+        }
+    }
     duration = this.request.query['duration'] * 60; // convert duration from minutes to seconds
+    try {
+        var id = (yield this.knex('time_entries').insert({
+            duration: duration,
+            user: user_id,
+            project: project_id,
+            activity: activity_id,
+            notes: this.request.query['notes'],
+            issue_uri: this.request.query['issue_uri'],
+            date_worked: Date.parse(this.request.query['date']),
+            created_at: Date.now()
+        }))[0];
 
-    var id = (yield this.knex('time_entries').insert({
-        duration: duration,
-        user: user_id,
-        project: project_id,
-        activity: activity_id,
-        notes: this.request.query['notes'],
-        issue_uri: this.request.query['issue_uri'],
-        date_worked: Date.parse(this.request.query['date']),
-        created_at: Date.now()
-    }))[0];
-
-    this.body = yield this.knex('time_entries').where('id', id);
+        this.body = yield this.knex('time_entries').where('id', id);
+    } catch(error) {
+        if(error.errno == UNIQUE_CONSTRAINT_ERROR) {
+            this.body = errorDatabaseSaveFailed(String(error));
+            this.status = 400;
+            return;
+        } else {
+            throw(error);
+        }
+    }
 }));
 
 app.use(_.get('/time/:timeid', function *(timeid) {
-    this.body = (yield this.knex('time_entries').where('id', timeid))[0];
+    var time = (yield this.knex('time_entries').where('id', timeid))[0];
+    if (!time) this.throw(404, errorObjectNotFound('time entry'));
+    this.body = time;
 }));
 
 
