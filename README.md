@@ -16,7 +16,7 @@ recreate the DB between tests
 
 Docs you'll want:
 -----------------
-http://koajs.com/
-http://knexjs.org/
-https://city41.github.io/node-sql-fixtures/
-http://mochajs.org/
+* http://koajs.com/
+* http://knexjs.org/
+* https://city41.github.io/node-sql-fixtures/
+* http://mochajs.org/
