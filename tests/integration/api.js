@@ -11,22 +11,32 @@ var request = require('supertest').agent(app.listen());
 
 describe('api', function() {
 
-  beforeEach(() => {
-    return sqlFixtures.create(knexfile.development, test_data, (err, result) => {
-        if (err) {
-          console.log('Fixtures not loaded into db!', err, result);
-        }
-      });
+  beforeEach(function(done) {
+    this.timeout(5000);
+    console.log('beginning import');
+    sqlFixtures.create(knexfile.development, test_data).then(function() {
+      console.log('import complete');
+      done();
+    });
   });
 
-  // TODO: This is broken. Just recreate the DB between tests.
-  afterEach(() => {
-    return knex.schema
-               .dropTable('projects')
-               .dropTable('time_entries')
-               .dropTable('activities')
-               .dropTable('users')
-               .then(sqlFixtures.destroy());
+
+  afterEach(function(done){
+    this.timeout(5000);
+    console.log('beginning purge');
+    knex('projects').del().then(function() {
+      console.log('projects deleted');
+      knex('activities').del().then(function() {
+        console.log('activities deleted');
+        knex('users').del().then(function() {
+          console.log('users deleted');
+          knex('time_entries').del().then(function() {
+            console.log('time entries deleted');
+            sqlFixtures.destroy().then(function() {
+              console.log('db cleared');
+              done();
+      });});});
+    });});
   });
 
   describe('GET /users', ()=> {
