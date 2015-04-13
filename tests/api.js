@@ -1,12 +1,12 @@
 var mocha = require('mocha');
 var assert = require('assert');
 var sqlFixtures = require('sql-fixtures');
-var knexfile = require('../../knexfile');
+var knexfile = require('../knexfile');
 var knex = require('knex')(knexfile.development);;
 
-var test_data = require('../fixtures/test_data');
+var test_data = require('./fixtures/test_data');
 
-var app = require('../../src/app');
+var app = require('../src/app');
 var request = require('supertest').agent(app.listen());
 
 
