@@ -50,5 +50,102 @@ describe('api', function() {
     });
   });
 
+  describe('GET /activities', ()=> {
+    it('should return a list of activities', (cb) => {
+      user = request.get('/activities').expect([
+          {
+             "name":"Documentation",
+             "slug":"doc",
+             "id": 1
+          },
+          {
+             "name":"Development",
+             "slug":"dev",
+             "id": 2
+          },
+          {
+             "name":"Systems",
+             "slug":"sys",
+             "id": 3
+          }
+      ]).expect(200, cb);
+    });
+  });
+
+  describe('GET /projects', ()=> {
+    it('should return a list of projects', (cb) => {
+      user = request.get('/projects').expect([
+        {
+           "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
+           "name":"Ganeti Web Manager",
+           "slug":"gwm",
+           "owner": 2,
+           "id": 1
+        },
+        {
+           "uri":"https://code.osuosl.org/projects/pgd",
+           "name":"Protein Geometry Database",
+           "slug":"pgd",
+           "owner": 1,
+           "id": 2
+        },
+        {
+           "uri":"https://github.com/osu-cass/whats-fresh-api",
+           "name":"Whats Fresh",
+           "slug":"wf",
+           "owner": 2,
+           "id": 3
+        }
+      ]).expect(200, cb);
+    });
+  });
+
+  describe('GET /projects/1', ()=> {
+    it('should return the GWM project', (cb) => {
+      user = request.get('/projects/1').expect({
+           "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
+           "name":"Ganeti Web Manager",
+           "slug":"gwm",
+           "owner": 2,
+           "id": 1
+      }).expect(200, cb);
+    });
+  });
+
+  describe('GET /time', ()=> {
+    it('should return a list of time entries', (cb) => {
+      user = request.get('/time').expect([
+        {
+          "duration":12,
+          "user": 2,
+          "project": 3,
+          "activity": 2,
+          "notes":"",
+          "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
+          "date_worked":null,
+          "created_at":null,
+          "updated_at":null,
+          "id": 1
+        }
+      ]).expect(200, cb);
+    });
+  });
+
+  describe('GET /time/1', ()=> {
+    it('should return the first time entry', (cb) => {
+      user = request.get('/time/1').expect({
+        "duration":12,
+        "user": 2,
+        "project": 3,
+        "activity": 2,
+        "notes":"",
+        "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
+        "date_worked":null,
+        "created_at":null,
+        "updated_at":null,
+        "id": 1
+      }).expect(200, cb);
+    });
+  });
 
 });
