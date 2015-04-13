@@ -40,19 +40,19 @@ describe('api', function() {
 
   describe('GET /users/1', ()=> {
     it('should return user profile for existing user', (cb) => {
-      user = request.get('/users/1').expect(200, cb);
+      request.get('/users/1').expect(200, cb);
     });
   });
 
   describe('GET /users/42', ()=> {
     it('should return 404 for a non-existent user', (cb) => {
-      user = request.get('/users/42').expect(404, cb);
+      request.get('/users/42').expect(404, cb);
     });
   });
 
   describe('GET /activities', ()=> {
     it('should return a list of activities', (cb) => {
-      user = request.get('/activities').expect([
+      request.get('/activities').expect([
           {
              "name":"Documentation",
              "slug":"doc",
@@ -74,7 +74,7 @@ describe('api', function() {
 
   describe('GET /projects', ()=> {
     it('should return a list of projects', (cb) => {
-      user = request.get('/projects').expect([
+      request.get('/projects').expect([
         {
            "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
            "name":"Ganeti Web Manager",
@@ -102,7 +102,7 @@ describe('api', function() {
 
   describe('GET /projects/1', ()=> {
     it('should return the GWM project', (cb) => {
-      user = request.get('/projects/1').expect({
+      request.get('/projects/1').expect({
            "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
            "name":"Ganeti Web Manager",
            "slug":"gwm",
@@ -114,7 +114,7 @@ describe('api', function() {
 
   describe('GET /time', ()=> {
     it('should return a list of time entries', (cb) => {
-      user = request.get('/time').expect([
+      request.get('/time').expect([
         {
           "duration":12,
           "user": 2,
@@ -133,7 +133,7 @@ describe('api', function() {
 
   describe('GET /time/1', ()=> {
     it('should return the first time entry', (cb) => {
-      user = request.get('/time/1').expect({
+      request.get('/time/1').expect({
         "duration":12,
         "user": 2,
         "project": 3,
