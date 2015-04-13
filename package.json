@@ -11,7 +11,7 @@
     "migrate": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "lint": "jshint ./src ./tests",
-    "test": "./node_modules/.bin/mocha --harmony tests/integration"
+    "test": "./node_modules/.bin/mocha --harmony tests/"
   },
   "repository": {
     "type": "git",
