@@ -9,6 +9,7 @@ var test_data = require('../fixtures/test_data');
 var app = require('../../src/app');
 var request = require('supertest').agent(app.listen());
 
+
 describe('api', function() {
 
   beforeEach(function(done) {
@@ -36,30 +37,6 @@ describe('api', function() {
   });
 
 
-
-  describe('GET /users/1', ()=> {
-    it('should return user profile for existing user', (cb) => {
-      user = request.get('/users/1').expect(200, cb);
-    });
-  });
-
-  describe('GET /users/1', ()=> {
-    it('should return user profile for existing user', (cb) => {
-      user = request.get('/users/1').expect(200, cb);
-    });
-  });
-
-  describe('GET /users/1', ()=> {
-    it('should return user profile for existing user', (cb) => {
-      user = request.get('/users/1').expect(200, cb);
-    });
-  });
-
-  describe('GET /users/1', ()=> {
-    it('should return user profile for existing user', (cb) => {
-      user = request.get('/users/1').expect(200, cb);
-    });
-  });
 
   describe('GET /users/1', ()=> {
     it('should return user profile for existing user', (cb) => {
