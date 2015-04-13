@@ -39,14 +39,16 @@ describe('api', function() {
     });});
   });
 
-  describe('GET /users', ()=> {
-    it('should return the requested username', (cb) => {
+
+
+  describe('GET /users/1', ()=> {
+    it('should return user profile for existing user', (cb) => {
       user = request.get('/users/1').expect(200, cb);
     });
   });
 
-  describe('GET /users', ()=> {
-    it('should return the requested username', (cb) => {
+  describe('GET /users/42', ()=> {
+    it('should return 404 for a non-existent user', (cb) => {
       user = request.get('/users/42').expect(404, cb);
     });
   });
