@@ -13,9 +13,7 @@ describe('api', function() {
 
   beforeEach(function(done) {
     this.timeout(5000);
-    console.log('beginning import');
     sqlFixtures.create(knexfile.development, test_data).then(function() {
-      console.log('import complete');
       done();
     });
   });
@@ -23,23 +21,45 @@ describe('api', function() {
 
   afterEach(function(done){
     this.timeout(5000);
-    console.log('beginning purge');
     knex('projects').del().then(function() {
-      console.log('projects deleted');
       knex('activities').del().then(function() {
-        console.log('activities deleted');
         knex('users').del().then(function() {
-          console.log('users deleted');
           knex('time_entries').del().then(function() {
-            console.log('time entries deleted');
             sqlFixtures.destroy().then(function() {
-              console.log('db cleared');
+              console.log('deleted everything successfully');
               done();
-      });});});
-    });});
+            });
+          });
+        });
+      });
+    });
   });
 
 
+
+  describe('GET /users/1', ()=> {
+    it('should return user profile for existing user', (cb) => {
+      user = request.get('/users/1').expect(200, cb);
+    });
+  });
+
+  describe('GET /users/1', ()=> {
+    it('should return user profile for existing user', (cb) => {
+      user = request.get('/users/1').expect(200, cb);
+    });
+  });
+
+  describe('GET /users/1', ()=> {
+    it('should return user profile for existing user', (cb) => {
+      user = request.get('/users/1').expect(200, cb);
+    });
+  });
+
+  describe('GET /users/1', ()=> {
+    it('should return user profile for existing user', (cb) => {
+      user = request.get('/users/1').expect(200, cb);
+    });
+  });
 
   describe('GET /users/1', ()=> {
     it('should return user profile for existing user', (cb) => {
