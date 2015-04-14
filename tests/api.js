@@ -216,6 +216,21 @@ describe('api', function() {
     });
   });
 
+  describe('POST /activities/add', ()=> {
+    it('should fail when slug already exists', (cb) => {
+      request
+        .post('/activities/add?name=Testing%20Activity&slug=dev')
+        .expect(function(res) {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "Database save failed",
+            "errno":2,
+            "text": "Error: SQLITE_CONSTRAINT: UNIQUE constraint failed: activities.slug"
+          });
+        })
+        .expect(400, cb);
+    });
+  });
+
   describe('POST /projects/add', ()=> {
     it('should fail when slug already exists', (cb) => {
       request
