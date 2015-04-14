@@ -1,6 +1,8 @@
 TimeSync
 ========
 
+[![Build Status](https://api.travis-ci.org/tschuy/timesync.png)](https://api.travis-ci.org/tschuy/timesync)
+
 Sync your time. It's cool, yo!
 
 Quickstart for devs:
