@@ -202,6 +202,20 @@ describe('api', function() {
     });
   });
 
+  describe('POST /activities/add', ()=> {
+    it('should add a new activity', (cb) => {
+      request
+        .post('/activities/add?name=Testing%20Activity')
+        .expect(200, () => {
+          request.get('/activities/4').expect({
+            'name': 'Testing Activity',
+            'slug': 'testing-activity',
+            'id': 4
+          }).expect(200, cb);
+        });
+    });
+  });
+
   describe('POST /projects/add', ()=> {
     it('should fail when slug already exists', (cb) => {
       request
