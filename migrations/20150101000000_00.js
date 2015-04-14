@@ -9,7 +9,7 @@ exports.up = function(knex, Promise) {
     table.integer('owner').references('id').inTable('users').notNullable();
   }).createTable('time_entries', function (table) {
     table.increments('id').primary();
-    table.integer('duration');
+    table.integer('duration').notNullable();
     table.integer('user').references('id').inTable('users').notNullable();
     table.integer('project').references('id').inTable('projects').notNullable();
     table.integer('activity').references('id').inTable('activity').notNullable();
