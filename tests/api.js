@@ -30,7 +30,6 @@ describe('api', function() {
         knex('users').del().then(function() {
           knex('time_entries').del().then(function() {
             sqlFixtures.destroy().then(function() {
-              console.log('deleted everything successfully');
               done();
             });
           });
