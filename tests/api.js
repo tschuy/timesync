@@ -194,18 +194,22 @@ describe('api', function() {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .expect(200, () => {
-          var sent_time =  (new Date).getTime()-2;
-          request.get('/time/2').expect({
-            'issue_uri': 'https://github.com/osuosl/ganeti_webmgr/issues/1',
-            'user': 1,
-            'notes': 'notes',
-            'activity': 1,
-            'project': 1,
-            'duration': 54 * 60,
-            'updated_at': null,
-            'date_worked': null,
-            'created_at': sent_time,
-            'id': 2
+          var sent_time =  (new Date).getTime();
+          request.get('/time/2').expect(function(res){
+            // TODO: This test does not test for *extra* things, as expect would
+            var result = JSON.parse(res.text);
+            assert.equal(result.issue_uri, 'https://github.com/osuosl/ganeti_webmgr/issues/1');
+            assert.equal(result.user, 1);
+            assert.equal(result.notes, 'notes');
+            assert.equal(result.activity, 1);
+            assert.equal(result.project, 1);
+            assert.equal(result.duration, 54 * 60);
+            assert.equal(result.updated_at, null);
+            assert.equal(result.date_worked, null);
+            assert.equal(result.id, 2);
+            if(Math.abs(sent_time - result.created_at) > 100) {
+              assert.equal(sent_time, result.created_at);
+            }
           }).expect(200, cb);
         });
     });
