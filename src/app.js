@@ -123,15 +123,21 @@ app.use(_.get('/projects', function *() {
 
 app.use(_.post('/projects/add', function *() {
     var slug = this.request.query.slug;
-    if(! slug) slug = createSlugFrom(this.request.query.name);
+    try {
+        if(! slug) slug = createSlugFrom(this.request.query.name);
+    } catch(error) {
+        if(error.name.toString() == 'TypeError') {
+            this.throw(400, errorNoNameProvided(String(error)));
+        } else {
+            throw(error);
+        }
+    }
     var owner_id;
     try {
         owner_id = (yield this.knex('users').where('username', this.request.query.owner))[0].id;
     } catch(error) {
         if(error.name.toString() == 'TypeError') {
-            this.body = errorInvalidForeignKey('owner');
-            this.status = 400;
-            return;
+            this.throw(400, errorInvalidForeignKey('owner'));
         } else {
             throw(error);
         }
