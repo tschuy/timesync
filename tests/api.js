@@ -14,12 +14,10 @@ describe('api', function() {
 
   beforeEach(function(done) {
     this.timeout(5000);
-    knex.raw('delete from projects').then(function(resp) {
-      knex.raw('delete from sqlite_sequence where name=\'projects\'')
-        .then(function(resp) {
-          sqlFixtures.create(knexfile.development, test_data).then(function() {
-            done();
-          });
+    // Clear SQLite indexes
+    knex.raw('delete from sqlite_sequence').then(function(resp) {
+      sqlFixtures.create(knexfile.development, test_data).then(function() {
+        done();
       });
     });
   });
