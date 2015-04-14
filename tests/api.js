@@ -211,4 +211,48 @@ describe('api', function() {
     });
   });
 
+  describe('POST /time/add', ()=> {
+    it('should fail to add a new time entry', (cb) => {
+      request
+        .post('/time/add?project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(200, () => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+  });
+
+  describe('POST /time/add', ()=> {
+    it('should fail to add a new time entry', (cb) => {
+      request
+        .post('/time/add?activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(200, () => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        }).expect(200);
+    });
+  });
+
+  describe('POST /time/add', ()=> {
+    it('should fail to add a new time entry', (cb) => {
+      request
+        .post('/time/add?activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(200, () => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+  });
+
+  describe('POST /time/add', ()=> {
+    it('should fail to add a new time entry', (cb) => {
+      request
+        .post('/time/add?activity=doc&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(200, () => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+  });
+
+
+
+
+
 });
