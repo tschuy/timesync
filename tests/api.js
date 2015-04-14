@@ -153,6 +153,7 @@ describe('api', function() {
     });
   });
 
+
   describe('POST /projects/add', ()=> {
     it('should add a new project for Working Waterfronts', (cb) => {
       request
@@ -169,5 +170,26 @@ describe('api', function() {
     });
   });
 
+  describe('POST /projects/add', ()=> {
+    it('should add a new project for Working Waterfronts with custom slug', (cb) => {
+      request
+        .post('/projects/add?uri=https%3a%2f%2fgithub.com%2Fosu-cass%2fworking-waterfronts&name=Working%20Waterfronts&owner=tschuy&slug=ww')
+        .expect(200, () => {
+          request.get('/projects/4').expect({
+            'uri': 'https://github.com/osu-cass/working-waterfronts',
+            'name': 'Working Waterfronts',
+            'slug': 'ww',
+            'owner': 2,
+            'id': 4
+          }).expect(200, cb);
+        });
+    });
+  });
+
+  describe('POST /projects/add', ()=> {
+    it('should fail when given a gibberish owner', (cb) => {
+      request.post('/projects/add?owner=gibberish&name=test').expect(400, cb);
+    });
+  });
 
 });
