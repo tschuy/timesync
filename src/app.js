@@ -274,5 +274,5 @@ app.use(_.get('/time/:timeid', function *(timeid) {
 }));
 
 
-
-app.listen(3000);
+var port = process.env.TIMESYNC_PORT || 3000;
+app.listen(port);
