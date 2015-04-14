@@ -196,19 +196,28 @@ describe('api', function() {
         .expect(200, () => {
           var sent_time =  (new Date).getTime();
           request.get('/time/2').expect(function(res){
-            // TODO: This test does not test for *extra* things, as expect would
             var result = JSON.parse(res.text);
-            assert.equal(result.issue_uri, 'https://github.com/osuosl/ganeti_webmgr/issues/1');
-            assert.equal(result.user, 1);
-            assert.equal(result.notes, 'notes');
-            assert.equal(result.activity, 1);
-            assert.equal(result.project, 1);
-            assert.equal(result.duration, 54 * 60);
-            assert.equal(result.updated_at, null);
-            assert.equal(result.date_worked, null);
-            assert.equal(result.id, 2);
             if(Math.abs(sent_time - result.created_at) > 100) {
               assert.equal(sent_time, result.created_at);
+            }
+            delete result['created_at'];
+            var expected_result = {
+              'issue_uri': 'https://github.com/osuosl/ganeti_webmgr/issues/1',
+              'user': 1,
+              'notes': 'notes',
+              'activity': 1,
+              'project': 1,
+              'duration': 54 * 60,
+              'updated_at': null,
+              'date_worked': null,
+              'id': 2
+            };
+            // for some reason assert.equal fails on the two json blocks
+            for (var j in expected_result) {
+              assert.equal(expected_result[j], result[j]);
+            }
+            for (var j in result) {
+              assert.equal(expected_result[j], result[j]);
             }
           }).expect(200, cb);
         });
