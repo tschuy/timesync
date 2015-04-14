@@ -179,6 +179,13 @@ describe('api', function() {
     it('should fail when slug already exists', (cb) => {
       request
         .post('/projects/add?uri=https%3a%2f%2fgithub.com%2Fosu-cass%2fworking-waterfronts&name=Working%20Waterfronts&owner=tschuy&slug=wf')
+        .expect(function(res) {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "Database save failed",
+            "errno":2,
+            "text": "Error: SQLITE_CONSTRAINT: UNIQUE constraint failed: projects.slug"
+          });
+        })
         .expect(400, cb);
     });
   });
