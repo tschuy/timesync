@@ -118,8 +118,13 @@ describe('api', function() {
 
   describe('GET /projects/42', ()=> {
     it('should return 404 for a non-existent project', (cb) => {
-      request.get('/projects/42').expect(404, cb);
-      // TODO: check return body
+      request.get('/projects/42').expect(function(res) {
+        assert.deepEqual(JSON.parse(res.error.text), {
+          "error":"Object not found",
+          "errno":1,
+          "text":"Invalid project"
+        });
+      }).expect(404, cb);
     });
   });
 
