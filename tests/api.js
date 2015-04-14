@@ -190,4 +190,26 @@ describe('api', function() {
     });
   });
 
+  describe('POST /time/add', ()=> {
+    it('should add a new time entry', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(200, () => {
+          var sent_time =  (new Date).getTime()-2;
+          request.get('/time/2').expect({
+            'issue_uri': 'https://github.com/osuosl/ganeti_webmgr/issues/1',
+            'user': 1,
+            'notes': 'notes',
+            'activity': 1,
+            'project': 1,
+            'duration': 54 * 60,
+            'updated_at': null,
+            'date_worked': null,
+            'created_at': sent_time,
+            'id': 2
+          }).expect(200, cb);
+        });
+    });
+  });
+
 });
