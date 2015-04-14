@@ -159,7 +159,6 @@ describe('api', function() {
     });
   });
 
-
   describe('POST /projects/add', ()=> {
     it('should add a new project for Working Waterfronts', (cb) => {
       request
@@ -173,6 +172,29 @@ describe('api', function() {
             'id': 4
           }).expect(200, cb);
         });
+    });
+  });
+
+  describe('POST /projects/add', ()=> {
+    it('should fail when slug already exists', (cb) => {
+      request
+        .post('/projects/add?uri=https%3a%2f%2fgithub.com%2Fosu-cass%2fworking-waterfronts&name=Working%20Waterfronts&owner=tschuy&slug=wf')
+        .expect(400, cb);
+    });
+  });
+
+  describe('POST /projects/add', ()=> {
+    it('should fail when no name is passed', (cb) => {
+      request
+        .post('/projects/add?uri=https%3a%2f%2fgithub.com%2Fosu-cass%2fworking-waterfronts&owner=tschuy')
+        .expect(function(res) {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "No Name provided",
+            "errno": 4,
+            "text": "TypeError: Cannot read property 'toLowerCase' of undefined"}
+            );
+        })
+        .expect(400, cb);
     });
   });
 
