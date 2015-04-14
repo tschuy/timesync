@@ -45,6 +45,14 @@ function errorInvalidForeignKey(object) {
     });
 }
 
+function errorNoNameProvided(error) {
+    return JSON.stringify({
+        'error': "No Name provided",
+        'errno': 4,
+        'text': error
+    });
+}
+
 // Users
 app.use(_.get('/users/:userid', function *(userid) {
     var user = (yield this.knex('users').where('id', userid))[0];
