@@ -13,22 +13,26 @@ var request = require('supertest').agent(app.listen());
 describe('api', function() {
 
   beforeEach(function(done) {
-
     this.timeout(5000);
-    knex.migrate.latest({directory: './migrations/'});
-    sqlFixtures.create(knexfile.development, test_data).then(function() {
-      done();
+    knex.raw('delete from projects').then(function(resp) {
+      knex.raw('delete from sqlite_sequence where name=\'projects\'')
+        .then(function(resp) {
+          sqlFixtures.create(knexfile.development, test_data).then(function() {
+            done();
+          });
+      });
     });
   });
 
 
   afterEach(function(done){
     this.timeout(5000);
-    knex.schema.dropTable('projects').then(function() {
-      knex.schema.dropTable('activities').then(function() {
-        knex.schema.dropTable('users').then(function() {
-          knex.schema.dropTable('time_entries').then(function() {
+    knex('projects').del().then(function() {
+      knex('activities').del().then(function() {
+        knex('users').del().then(function() {
+          knex('time_entries').del().then(function() {
             sqlFixtures.destroy().then(function() {
+              console.log('deleted everything successfully');
               done();
             });
           });
