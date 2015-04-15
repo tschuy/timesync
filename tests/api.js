@@ -411,6 +411,40 @@ describe('api', function() {
     });
   });
 
+  describe('GET /time/:id', ()=> {
+    it('should return an existing object', (cb) => {
+      request
+        .get('/time/1')
+        .expect(200)
+        .expect({
+          "duration":12,
+          "user": 2,
+          "project": 3,
+          "activity": 2,
+          "notes": "",
+          "issue_uri": "https://github.com/osu-cass/whats-fresh-api/issues/56",
+          "date_worked": null,
+          "created_at": null,
+          "updated_at": null,
+          "id": 1
+        })
+        .end(cb);
+    });
+
+    it('should not return a non-existant object', (cb) => {
+      request
+        .get('/time/2')
+        .expect(404)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "Object not found",
+            "errno": 1,
+            "text": "Invalid time entry"
+          });
+        }).end(cb);
+    });
+  });
+
   describe('POST /time/add', ()=> {
     it('should fail to add a new time entry with null activity', (cb) => {
       request
