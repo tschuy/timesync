@@ -415,7 +415,43 @@ describe('api', function() {
     it('should fail to add a new time entry with null activity', (cb) => {
       request
         .post('/time/add?project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
-        .expect(200, () => {
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "Database save failed",
+            "errno": 2,
+            "text": "Error: SQLITE_CONSTRAINT: NOT NULL constraint failed: time_entries.activity"
+          });
+        }).end(cb);
+
+    });
+
+    it('should error given a new time entry with a bad activity', (cb) => {
+      request
+        .post('/time/add?project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&activity=notanactivity')
+        .end(() => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+    it('should fail to add a new time entry with bad activity', (cb) => {
+      request
+        .post('/time/add?project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&activity=notanactivity')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "Invalid foreign key",
+            "errno": 3,
+            "text": "Invalid activity"
+          });
+        }).end(cb);
+
+    });
+
+    it('should error given a new time entry with a null activity', (cb) => {
+      request
+        .post('/time/add?project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .end(() => {
           request.get('/time/2').expect({}).expect(404).end(cb);
         });
     });
