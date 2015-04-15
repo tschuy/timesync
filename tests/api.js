@@ -431,7 +431,7 @@ describe('api', function() {
         .end(cb);
     });
 
-    it('should not return a non-existant object', (cb) => {
+    it('should not return a non-existent object', (cb) => {
       request
         .get('/time/2')
         .expect(404)
@@ -460,9 +460,9 @@ describe('api', function() {
 
     });
 
-    it('should error given a new time entry with a bad activity', (cb) => {
+    it('should not create a new time entry with a null activity', (cb) => {
       request
-        .post('/time/add?project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&activity=notanactivity')
+        .post('/time/add?project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .end(() => {
           request.get('/time/2').expect({}).expect(404).end(cb);
         });
@@ -482,7 +482,7 @@ describe('api', function() {
 
     });
 
-    it('should error given a new time entry with a null activity', (cb) => {
+    it('should not have created a new time entry with a null activity', (cb) => {
       request
         .post('/time/add?project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .end(() => {
@@ -490,7 +490,7 @@ describe('api', function() {
         });
     });
 
-    it('should error given a new time entry with null project', (cb) => {
+    it('should fail to add a new time entry with null project', (cb) => {
       request
         .post('/time/add?activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .expect(400)
@@ -503,7 +503,7 @@ describe('api', function() {
         }).end(cb);
     });
 
-    it('should fail to add a new time entry with null project', (cb) => {
+    it('should not have created a new time entry with null project', (cb) => {
       request
         .post('/time/add?activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .end(() => {
@@ -511,7 +511,7 @@ describe('api', function() {
         });
     });
 
-    it('should error given a new time entry with a bad project', (cb) => {
+    it('should fail to add a new time entry with a bad project', (cb) => {
       request
         .post('/time/add?activity=doc&project=notaproject&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .expect(400)
@@ -524,7 +524,7 @@ describe('api', function() {
         }).end(cb);
     });
 
-    it('should fail to add a new time entry with a bad project', (cb) => {
+    it('should not have created a new time entry with a bad project', (cb) => {
       request
         .post('/time/add?activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&project=notaproject')
         .end(() => {
@@ -533,7 +533,7 @@ describe('api', function() {
     });
 
 
-    it('should respond with an error given a time entry with bad date', (cb) => {
+    it('should fail to add a new time entry given an invalid date', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&date=notadate')
         .expect(400)
@@ -546,7 +546,15 @@ describe('api', function() {
         }).end(cb);
     });
 
-    it('should error given a new time entry with null user', (cb) => {
+    it('should not have created a new time entry with a bad date', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&date=notadate')
+        .end(() => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+    it('should fail to add a new time entry with null user', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .expect(function(res) {
@@ -561,7 +569,7 @@ describe('api', function() {
         .end(cb);
     });
 
-    it('should fail to add a new time entry with null user', (cb) => {
+    it('should not have created a new time entry with null user', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .end(() => {
@@ -569,15 +577,7 @@ describe('api', function() {
         });
     });
 
-    it('should not have a new time entry after adding a bad date', (cb) => {
-      request
-        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&date=notadate')
-        .end(() => {
-          request.get('/time/2').expect({}).expect(404).end(cb);
-        });
-    });
-
-    it('should respond with an error given a time entry with null duration', (cb) => {
+    it('should fail to add a new time entry with null duration', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .expect(400)
@@ -589,35 +589,35 @@ describe('api', function() {
         }).end(cb);
     });
 
-    it('should fail to add a new time entry with a null duration', (cb) => {
+    it('should not have created a new time entry with a null duration', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .end((res) => {
           request.get('/time/2').expect({}).expect(404).end(cb);
         });
-    });
-
-    it('should error given a new time entry with bad duration', (cb) => {
-      request
-        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=gibberish&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
-        .expect(400)
-        .expect((res) => {
-          assert.deepEqual(JSON.parse(res.error.text), {
-            "errno": 5,
-            "error": "The provided value wasn't valid"
-          });
-        }).end(cb);
     });
 
     it('should fail to add a new time entry with bad duration', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=gibberish&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "errno": 5,
+            "error": "The provided value wasn't valid"
+          });
+        }).end(cb);
+    });
+
+    it('should not have created a new time entry with bad duration', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=gibberish&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .end((res) => {
           request.get('/time/2').expect({}).expect(404).end(cb);
         });
     });
 
-    it('should error given a new time entry with bad user', (cb) => {
+    it('should fail to add a new time entry with bad user', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=notauser&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .expect(400)
@@ -630,7 +630,7 @@ describe('api', function() {
         }).end(cb);
     });
 
-    it('should fail to add a new time entry with bad user', (cb) => {
+    it('should not have created a new time entry with bad user', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=notauser&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .end((res) => {
@@ -638,7 +638,7 @@ describe('api', function() {
         });
     });
 
-    it('should error given a new time entry with no user', (cb) => {
+    it('should fail to add a new time entry with no user', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .expect(400)
@@ -651,7 +651,7 @@ describe('api', function() {
         }).end(cb);
     });
 
-    it('should fail to add a new time entry with no user', (cb) => {
+    it('should not have created a new time entry with no user', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .end((res) => {
