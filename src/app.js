@@ -284,9 +284,7 @@ app.use(_.post('/time/add', function *() {
         this.body = yield this.knex('time_entries').where('id', id);
     } catch(error) {
         if(error.errno == DATABASE_SAVE_ERROR) {
-            this.body = errorDatabaseSaveFailed(String(error));
-            this.status = 400;
-            return;
+            this.throw(400, errorDatabaseSaveFailed(String(error)));
         } else {
             throw(error);
         }
