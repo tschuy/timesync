@@ -441,6 +441,28 @@ describe('api', function() {
         });
     });
 
+    it('should error given a new time entry with a bad project', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=notaproject&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "Invalid foreign key",
+            "errno": 3,
+            "text": "Invalid project"
+          });
+        }).end(cb);
+    });
+
+    it('should fail to add a new time entry with a bad project', (cb) => {
+      request
+        .post('/time/add?activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&project=notaproject')
+        .end(() => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+
     it('should respond with an error given a time entry with bad date', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&date=notadate')
