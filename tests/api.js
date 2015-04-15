@@ -362,30 +362,102 @@ describe('api', function() {
           request.get('/time/2').expect({}).expect(404).end(cb);
         });
     });
-  });
 
-  describe('POST /time/add', ()=> {
+    it('should error given a new time entry with null project', (cb) => {
+      request
+        .post('/time/add?activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "The provided value wasn't valid",
+            "errno": 5,
+            "text": "notadate"
+          });
+        }).end(cb);
+    });
+
     it('should fail to add a new time entry with null project', (cb) => {
       request
         .post('/time/add?activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
-        .expect(200, () => {
+        .end(() => {
           request.get('/time/2').expect({}).expect(404).end(cb);
-        }).expect(200);
+        });
     });
-  });
 
-  describe('POST /time/add', ()=> {
+    it('should respond with an error given a time entry with bad date', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&date=notadate')
+        .expect(400)
+        .expect(function(res) {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "The provided value wasn't valid",
+            "errno": 5,
+            "text": "notadate"
+            });
+        }).end(cb);
+    });
+
+    it('should error given a new time entry with null user', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(function(res) {
+          console.log(res.error.text);
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "Provided date was not a iso 8601 date",
+            "errno": 5,
+            "text": "notadate"
+          });
+        })
+        .expect(400)
+        .end(cb);
+    });
+
     it('should fail to add a new time entry with null user', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
-        .expect(200, () => {
+        .end(() => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+    it('should not have a new time entry after adding a bad date', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&date=notadate')
+        .end(() => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+    it('should respond with an error given a time entry with bad duration', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=gibberish&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "errno": 5,
+            "error": "The provided value wasn't valid"
+            });
+        }).end(cb);
+    });
+
+    it('should error given a new time entry with bad duration', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=gibberish&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "errno": 5,
+            "error": "The provided value wasn't valid"
+            });
+        }).end(cb);
+    });
+
+    it('should fail to add a new time entry with bad duration', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=gibberish&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .end((res) => {
           request.get('/time/2').expect({}).expect(404).end(cb);
         });
     });
   });
-
-
-
-
-
 });
