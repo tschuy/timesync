@@ -660,4 +660,178 @@ describe('api', function() {
     });
 
   });
+
+  describe('POST /time/update', ()=> {
+
+    it('should not update a non-existant time entry', (cb) => {
+      request
+        .post('/time/update?id=201&duration=21')
+        .expect(404)
+        .expect({
+          'error': "Object not found",
+          'errno': 1,
+          'text': "Invalid id"
+        })
+        .end(cb);
+    });
+
+    it('should successfully update a valid time entry', (cb) => {
+      request
+        .post('/time/update?id=1&duration=21')
+        .expect(200)
+        .expect({
+          "duration": 21,
+          "user": 2,
+          "project": 3,
+          "activity": 2,
+          "notes":"",
+          "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
+          "date_worked": null,
+          "created_at": null,
+          "updated_at": null,
+          "id": 1
+        })
+        .end(cb);
+    });
+
+    it('should not insert a new time entry', (cb) => {
+      request
+        .post('/time/update?id=1&duration=21')
+        .end(() => {
+          request
+            .get('/time/2')
+            .expect(404)
+            .end(cb);
+        });
+    });
+
+    it('should error given a new time entry with a bad activity', (cb) => {
+      request
+        .post('/time/update?id=1&project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&activity=notanactivity')
+        .end(() => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+    it('should fail to update a new time entry with bad activity', (cb) => {
+      request
+        .post('/time/update?id=1&project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&activity=notanactivity')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "Invalid foreign key",
+            "errno": 3,
+            "text": "Invalid activity"
+          });
+        }).end(cb);
+
+    });
+
+    it('should error given a new time entry with a bad project', (cb) => {
+      request
+        .post('/time/update?id=1&activity=doc&project=notaproject&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "Invalid foreign key",
+            "errno": 3,
+            "text": "Invalid project"
+          });
+        }).end(cb);
+    });
+
+    it('should fail to update a new time entry with a bad project', (cb) => {
+      request
+        .post('/time/update?id=1&activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&project=notaproject')
+        .end(() => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+
+    it('should respond with an error given a time entry with bad date', (cb) => {
+      request
+        .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=54&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&date=notadate')
+        .expect(400)
+        .expect(function(res) {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "The provided value wasn't valid",
+            "errno": 5,
+            "text": "notadate"
+            });
+        }).end(cb);
+    });
+
+    it('should not have a new time entry after updateing a bad date', (cb) => {
+      request
+        .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=54&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&date=notadate')
+        .end(() => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+    it('should error given a new time entry with bad duration', (cb) => {
+      request
+        .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=gibberish&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "errno": 5,
+            "error": "The provided value wasn't valid"
+          });
+        }).end(cb);
+    });
+
+    it('should fail to update a new time entry with bad duration', (cb) => {
+      request
+        .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=gibberish&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .end((res) => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+    it('should error given a new time entry with bad user', (cb) => {
+      request
+        .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=54&user=notauser&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "errno": 3,
+            "error": "Invalid foreign key",
+            "text": "Invalid user"
+          });
+        }).end(cb);
+    });
+
+    it('should fail to update a new time entry with bad user', (cb) => {
+      request
+        .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=54&user=notauser&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .end((res) => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+    it('should error given a new time entry with no user', (cb) => {
+      request
+        .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "errno": 3,
+            "error": "Invalid foreign key",
+            "text": "Invalid user"
+          });
+        }).end(cb);
+    });
+
+    it('should fail to update a new time entry with no user', (cb) => {
+      request
+        .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .end((res) => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+  });
+
 });
