@@ -733,7 +733,7 @@ describe('api', function() {
 
   describe('POST /time/update', ()=> {
 
-    it('should not update a non-existant time entry', (cb) => {
+    it('should not update a non-existent time entry', (cb) => {
       request
         .post('/time/update?id=201&duration=21')
         .expect(404)
@@ -767,11 +767,15 @@ describe('api', function() {
     it('should not insert a new time entry', (cb) => {
       request
         .post('/time/update?id=1&duration=21')
-        .end(() => {
-          request
-            .get('/time/2')
-            .expect(404)
-            .end(cb);
+         .end(() => {
+          request.get('/time/2')
+          .expect(function(res) {
+            assert.deepEqual(JSON.parse(res.error.text), {
+              "error": "Object not found",
+              "errno": 1,
+              "text": "Invalid time entry"
+            });
+          }).expect(404, cb);
         });
     });
 
