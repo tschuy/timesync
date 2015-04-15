@@ -775,6 +775,7 @@ describe('api', function() {
         });
     });
 
+    // TODO: This shouldn't 404, it should return the old object
     it('should error given a new time entry with a bad activity', (cb) => {
       request
         .post('/time/update?id=1&project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&activity=notanactivity')
@@ -783,6 +784,7 @@ describe('api', function() {
         });
     });
 
+    // TODO: This shouldn't 404, it should return the old object
     it('should fail to update a new time entry with bad activity', (cb) => {
       request
         .post('/time/update?id=1&project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&activity=notanactivity')
@@ -810,6 +812,7 @@ describe('api', function() {
         }).end(cb);
     });
 
+    // TODO: This shouldn't 404, it should return the old object
     it('should fail to update a new time entry with a bad project', (cb) => {
       request
         .post('/time/update?id=1&activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&project=notaproject')
@@ -832,6 +835,7 @@ describe('api', function() {
         }).end(cb);
     });
 
+    // TODO: This shouldn't 404, it should return the old object
     it('should not have a new time entry after updateing a bad date', (cb) => {
       request
         .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=54&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&date=notadate')
@@ -852,6 +856,7 @@ describe('api', function() {
         }).end(cb);
     });
 
+    // TODO: This shouldn't 404, it should return the old object
     it('should fail to update a new time entry with bad duration', (cb) => {
       request
         .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=gibberish&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
@@ -873,6 +878,7 @@ describe('api', function() {
         }).end(cb);
     });
 
+    // TODO: This shouldn't 404, it should return the old object
     it('should fail to update a new time entry with bad user', (cb) => {
       request
         .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=54&user=notauser&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
@@ -894,6 +900,7 @@ describe('api', function() {
         }).end(cb);
     });
 
+    // TODO: This shouldn't 404, it should return the old object
     it('should fail to update a new time entry with no user', (cb) => {
       request
         .post('/time/update?id=1&activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
