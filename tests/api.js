@@ -543,9 +543,9 @@ describe('api', function() {
         });
     });
 
-    it('should respond with an error given a time entry with bad duration', (cb) => {
+    it('should respond with an error given a time entry with null duration', (cb) => {
       request
-        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=gibberish&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .post('/time/add?activity=doc&project=gwm&notes=notes&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .expect(400)
         .expect((res) => {
           assert.deepEqual(JSON.parse(res.error.text), {
@@ -553,6 +553,14 @@ describe('api', function() {
             "error": "The provided value wasn't valid"
           });
         }).end(cb);
+    });
+
+    it('should fail to add a new time entry with a null duration', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&user=tschuy&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .end((res) => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
     });
 
     it('should error given a new time entry with bad duration', (cb) => {
@@ -616,8 +624,6 @@ describe('api', function() {
           request.get('/time/2').expect({}).expect(404).end(cb);
         });
     });
-
-
 
   });
 });
