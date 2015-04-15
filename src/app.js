@@ -259,16 +259,14 @@ app.use(_.post('/time/add', function *() {
       this.throw(400, errorInvalidValue(this.request.query.date));
     }
 
-    // Validate date
     var date;
     if (this.request.query.date) {
-      date == Date.parse(this.request.query.date);
+      date = Date.parse(this.request.query.date);
     } else {
       date = new Date();
     }
     if (isNaN(date)) {
-      this.status = 400;
-      this.throw(this.body = errorThatsNotADateYouFool(this.request.query.date));
+      this.throw(400, errorInvalidValue(this.request.query.date));
     }
 
     try {
@@ -279,7 +277,7 @@ app.use(_.post('/time/add', function *() {
             activity: activity_id,
             notes: this.request.query.notes,
             issue_uri: this.request.query.issue_uri,
-            date_worked: Date.parse(this.request.query.date),
+            date_worked: date,
             created_at: Date.now()
         }))[0];
 
