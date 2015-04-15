@@ -426,9 +426,9 @@ describe('api', function() {
         .expect(400)
         .expect((res) => {
           assert.deepEqual(JSON.parse(res.error.text), {
-            "error": "The provided value wasn't valid",
-            "errno": 5,
-            "text": "notadate"
+            "error": "Invalid foreign key",
+            "errno": 3,
+            "text": "Invalid project"
           });
         }).end(cb);
     });
@@ -460,9 +460,9 @@ describe('api', function() {
         .expect(function(res) {
           console.log(res.error.text);
           assert.deepEqual(JSON.parse(res.error.text), {
-            "error": "Provided date was not a iso 8601 date",
-            "errno": 5,
-            "text": "notadate"
+            "errno": 3,
+            "error": "Invalid foreign key",
+            "text": "Invalid user"
           });
         })
         .expect(400)
@@ -493,7 +493,7 @@ describe('api', function() {
           assert.deepEqual(JSON.parse(res.error.text), {
             "errno": 5,
             "error": "The provided value wasn't valid"
-            });
+          });
         }).end(cb);
     });
 
@@ -505,7 +505,7 @@ describe('api', function() {
           assert.deepEqual(JSON.parse(res.error.text), {
             "errno": 5,
             "error": "The provided value wasn't valid"
-            });
+          });
         }).end(cb);
     });
 
@@ -516,5 +516,50 @@ describe('api', function() {
           request.get('/time/2').expect({}).expect(404).end(cb);
         });
     });
+
+    it('should error given a new time entry with bad user', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=notauser&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "errno": 3,
+            "error": "Invalid foreign key",
+            "text": "Invalid user"
+          });
+        }).end(cb);
+    });
+
+    it('should fail to add a new time entry with bad user', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=notauser&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .end((res) => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+    it('should error given a new time entry with no user', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .expect(400)
+        .expect((res) => {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "errno": 3,
+            "error": "Invalid foreign key",
+            "text": "Invalid user"
+          });
+        }).end(cb);
+    });
+
+    it('should fail to add a new time entry with no user', (cb) => {
+      request
+        .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
+        .end((res) => {
+          request.get('/time/2').expect({}).expect(404).end(cb);
+        });
+    });
+
+
+
   });
 });
