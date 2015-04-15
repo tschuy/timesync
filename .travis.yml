@@ -3,7 +3,7 @@ node_js:
   - "0.12"
 # command to install dependencies
 install:
-  - "apt-get install sqlite3"
+  - "sudo apt-get install sqlite3"
   - "npm install"
 
 # command to run tests
