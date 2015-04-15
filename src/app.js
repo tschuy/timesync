@@ -53,6 +53,14 @@ function errorNoNameProvided(error) {
     });
 }
 
+function errorInvalidValue(error) {
+    return JSON.stringify({
+        'error': "The provided value wasn't valid",
+        'errno': 5,
+        'text': error
+    });
+}
+
 // Users
 app.use(_.get('/users/:userid', function *(userid) {
     var user = (yield this.knex('users').where('id', userid))[0];
@@ -246,7 +254,10 @@ app.use(_.post('/time/add', function *() {
             throw(error);
         }
     }
-    var duration = this.request.query.duration * 60; // convert duration from minutes to seconds
+    var duration = parseFloat(this.request.query.duration) * 60;
+    if (isNaN(duration)) {
+      this.throw(400, errorInvalidValue(this.request.query.date));
+    }
 
     // Validate date
     var date;
