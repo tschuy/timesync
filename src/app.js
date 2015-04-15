@@ -247,6 +247,19 @@ app.use(_.post('/time/add', function *() {
         }
     }
     var duration = this.request.query.duration * 60; // convert duration from minutes to seconds
+
+    // Validate date
+    var date;
+    if (this.request.query.date) {
+      date == Date.parse(this.request.query.date);
+    } else {
+      date = new Date();
+    }
+    if (isNaN(date)) {
+      this.status = 400;
+      this.throw(this.body = errorThatsNotADateYouFool(this.request.query.date));
+    }
+
     try {
         var id = (yield this.knex('time_entries').insert({
             duration: duration,

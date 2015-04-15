@@ -238,7 +238,11 @@ describe('api', function() {
             if(Math.abs(sent_time - result.created_at) > 100) {
               assert.equal(sent_time, result.created_at);
             }
+            if(Math.abs(sent_time - result.date_worked) > 100) {
+              assert.equal(sent_time, result.date_worked);
+            }
             delete result['created_at'];
+            delete result['date_worked'];
             var expected_result = {
               'issue_uri': 'https://github.com/osuosl/ganeti_webmgr/issues/1',
               'user': 1,
@@ -247,7 +251,6 @@ describe('api', function() {
               'project': 1,
               'duration': 54 * 60,
               'updated_at': null,
-              'date_worked': null,
               'id': 2
             };
             // for some reason assert.equal fails on the two json blocks
