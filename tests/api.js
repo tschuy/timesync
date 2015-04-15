@@ -194,7 +194,17 @@ describe('api', function() {
     it('should add a new project for Working Waterfronts', (cb) => {
       request
         .post('/projects/add?uri=https%3a%2f%2fgithub.com%2Fosu-cass%2fworking-waterfronts&name=Working%20Waterfronts&owner=tschuy')
-        .expect(200, () => {
+        .expect(function(res) {
+          assert.deepEqual(
+            JSON.parse(res.body),
+            {
+              id: 4,
+              name: 'Working Waterfronts',
+              slug: 'working-waterfronts',
+              uri: 'https://github.com/osu-cass/working-waterfronts',
+              owner: 2
+          });
+        }).expect(200, () => {
           request.get('/projects/4').expect({
             'uri': 'https://github.com/osu-cass/working-waterfronts',
             'name': 'Working Waterfronts',
@@ -210,7 +220,16 @@ describe('api', function() {
     it('should add a new activity', (cb) => {
       request
         .post('/activities/add?name=Testing%20Activity')
-        .expect(200, () => {
+        .expect(function(res) {
+          assert.deepEqual(
+            JSON.parse(res.body),
+            {
+              id: 4,
+              'name': 'Testing Activity',
+              'slug': 'testing-activity',
+              owner: 2
+          });
+        }).expect(200, () => {
           request.get('/activities/4').expect({
             'name': 'Testing Activity',
             'slug': 'testing-activity',
@@ -224,7 +243,16 @@ describe('api', function() {
     it('should add a new activity', (cb) => {
       request
         .post('/activities/add?name=Testing%20Activity&slug=testing')
-        .expect(200, () => {
+        .expect(function(res) {
+          assert.deepEqual(
+            JSON.parse(res.body),
+            {
+              id: 4,
+              'name': 'Testing Activity',
+              'slug': 'testing',
+              owner: 2
+          });
+        }).expect(200, () => {
           request.get('/activities/4').expect({
             'name': 'Testing Activity',
             'slug': 'testing',
@@ -298,7 +326,17 @@ describe('api', function() {
     it('should add a new project for Working Waterfronts with custom slug', (cb) => {
       request
         .post('/projects/add?uri=https%3a%2f%2fgithub.com%2Fosu-cass%2fworking-waterfronts&name=Working%20Waterfronts&owner=tschuy&slug=ww')
-        .expect(200, () => {
+        .expect(function(res) {
+          assert.deepEqual(
+            JSON.parse(res.body),
+            {
+              'uri': 'https://github.com/osu-cass/working-waterfronts',
+              'name': 'Working Waterfronts',
+              'slug': 'ww',
+              'owner': 2,
+              'id': 4
+            });
+        }).expect(200, () => {
           request.get('/projects/4').expect({
             'uri': 'https://github.com/osu-cass/working-waterfronts',
             'name': 'Working Waterfronts',
@@ -312,7 +350,16 @@ describe('api', function() {
 
   describe('POST /projects/add', ()=> {
     it('should fail when given a gibberish owner', (cb) => {
-      request.post('/projects/add?owner=gibberish&name=test').expect(400, cb);
+      request.post('/projects/add?owner=gibberish&name=test')
+        .expect(function(res) {
+          assert.deepEqual(
+            JSON.parse(res.error.text),
+            {
+              errno: 3,
+              error: "Invalid foreign key",
+              text: "Invalid owner"
+            });
+        }).expect(400, cb);
     });
   });
 
@@ -320,7 +367,23 @@ describe('api', function() {
     it('should add a new time entry', (cb) => {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
-        .expect(200, () => {
+        .expect(function(res) {
+          var result = JSON.parse(res.body);
+          delete result['created_at'];
+          assert.deepEqual(
+            result,
+            {
+              'issue_uri': 'https://github.com/osuosl/ganeti_webmgr/issues/1',
+              'user': 1,
+              'notes': 'notes',
+              'activity': 1,
+              'project': 1,
+              'duration': 54 * 60,
+              'updated_at': null,
+              'date_worked': null,
+              'id': 2
+          });
+        }).expect(200, () => {
           var sent_time =  (new Date).getTime();
           request.get('/time/2').expect(function(res){
             var result = JSON.parse(res.text);
@@ -339,13 +402,7 @@ describe('api', function() {
               'date_worked': null,
               'id': 2
             };
-            // for some reason assert.equal fails on the two json blocks
-            for (var j in expected_result) {
-              assert.equal(expected_result[j], result[j]);
-            }
-            for (var j in result) {
-              assert.equal(expected_result[j], result[j]);
-            }
+            assert.deepEqual(result, expected_result);
           }).expect(200, cb);
         });
     });
