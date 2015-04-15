@@ -231,6 +231,21 @@ describe('api', function() {
     });
   });
 
+  describe('POST /activities/add', ()=> {
+    it('should fail when no name is passed', (cb) => {
+      request
+        .post('/activities/add?slug=dev')
+        .expect(function(res) {
+          assert.deepEqual(JSON.parse(res.error.text), {
+            "error": "Database save failed",
+            "errno": 2,
+            "text": "Error: SQLITE_CONSTRAINT: NOT NULL constraint failed: activities.name"
+          });
+        })
+        .expect(400, cb);
+    });
+  });
+
   describe('POST /projects/add', ()=> {
     it('should fail when slug already exists', (cb) => {
       request
