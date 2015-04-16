@@ -218,6 +218,13 @@ app.use(_.get('/activities/:activityid', function *(activityid) {
     this.body = activity;
 }));
 
+app.use(_.delete('/activities/:activityid', function *(activityid) {
+    var activity = (yield this.knex('activities').where('id', activityid))[0];
+    if (!activity) this.throw(404, errorObjectNotFound('activity'));
+    yield this.knex('activities').where('id', activityid).del();
+    this.body = activity;
+}));
+
 // Time events
 app.use(_.get('/time', function *() {
     this.body = yield this.knex('time_entries');
