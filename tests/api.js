@@ -11,9 +11,9 @@ var request = require('supertest').agent(app.listen());
 
 
 describe('api', function() {
+  this.timeout(5000);
 
   beforeEach(function(done) {
-    this.timeout(5000);
     // Clear SQLite indexes
     knex.raw('delete from sqlite_sequence').then(function(resp) {
       sqlFixtures.create(knexfile.development, test_data).then(function() {
@@ -24,7 +24,6 @@ describe('api', function() {
 
 
   afterEach(function(done){
-    this.timeout(5000);
     knex('projects').del().then(function() {
       knex('activities').del().then(function() {
         knex('users').del().then(function() {
@@ -51,6 +50,24 @@ describe('api', function() {
   describe('GET /users/42', ()=> {
     it('should return 404 for a non-existent user', (cb) => {
       request.get('/users/42').expect(function(res) {
+        assert.deepEqual(
+          JSON.parse(res.error.text),
+          {error: "Object not found", errno: 1, text:"Invalid user"});
+      }).expect(404, cb);
+    });
+  });
+
+  describe('DELETE /users/1', ()=> {
+    it('should delete the user profile for an existing user', (cb) => {
+      request.delete('/users/1').expect(function(res) {
+        assert.deepEqual(res.body, { id: 1, username: 'deanj' });
+      }).expect(200, cb);
+    });
+  });
+
+  describe('GET /users/42', ()=> {
+    it('should return 404 for a non-existent user', (cb) => {
+      request.delete('/users/42').expect(function(res) {
         assert.deepEqual(
           JSON.parse(res.error.text),
           {error: "Object not found", errno: 1, text:"Invalid user"});
@@ -593,7 +610,6 @@ describe('api', function() {
       request
         .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
         .expect(function(res) {
-          console.log(res.error.text);
           assert.deepEqual(JSON.parse(res.error.text), {
             "errno": 3,
             "error": "Invalid foreign key",
@@ -779,12 +795,13 @@ describe('api', function() {
         });
     });
 
+    // TODO: all of the /time/update tests need to
     // TODO: This shouldn't 404, it should return the old object
     it('should error given a new time entry with a bad activity', (cb) => {
       request
-        .post('/time/update?id=1&project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&activity=notanactivity')
+        .post('/time/update?id=1&project=wf&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&activity=notanactivity')
         .end(() => {
-          request.get('/time/2').expect({}).expect(404).end(cb);
+          request.get('/time/1').expect({}).expect(200).end(cb);
         });
     });
 
@@ -819,9 +836,20 @@ describe('api', function() {
     // TODO: This shouldn't 404, it should return the old object
     it('should fail to update a new time entry with a bad project', (cb) => {
       request
-        .post('/time/update?id=1&activity=doc&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&project=notaproject')
+        .post('/time/update?id=1&activity=wf&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1&project=notaproject')
         .end(() => {
-          request.get('/time/2').expect({}).expect(404).end(cb);
+          request.get('/time/1').expect({
+        "duration":12,
+        "user": 2,
+        "project": 3,
+        "activity": 2,
+        "notes":"",
+        "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
+        "date_worked":null,
+        "created_at":null,
+        "updated_at":null,
+        "id": 1
+      }).expect(200).end(cb);
         });
     });
 
