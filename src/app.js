@@ -68,6 +68,13 @@ app.use(_.get('/users/:userid', function *(userid) {
     this.body = user;
 }));
 
+app.use(_.delete('/users/:userid', function *(userid) {
+    var user = (yield this.knex('users').where('id', userid))[0];
+    if (!user) this.throw(404, errorObjectNotFound('user'));
+    yield this.knex('users').where('id', userid).del();
+    this.body = user;
+}));
+
 app.use(_.get('/users', function *() {
     this.body = yield this.knex('users');
 }));
