@@ -209,6 +209,34 @@ describe('api', function() {
     });
   });
 
+  describe('DELETE /activities/1', ()=> {
+    it('should delete the activity for an existing activity', (cb) => {
+      request.delete('/activities/1').expect({
+        "name":"Documentation",
+        "slug":"doc",
+        "id": 1
+      }).expect(200, cb)
+      .end(() => {
+          request.get('/activities/1')
+          .expect(function(res) {
+            assert.deepEqual(
+              JSON.parse(res.error.text),
+              {error: "Object not found", errno: 1, text:"Invalid activity"});
+          }).expect(404, cb);
+        });;
+    });
+  });
+
+  describe('DELETE /activities/42', ()=> {
+    it('should return 404 for a non-existent activity', (cb) => {
+      request.delete('/activities/42').expect(function(res) {
+        assert.deepEqual(
+          JSON.parse(res.error.text),
+          {error: "Object not found", errno: 1, text:"Invalid activity"});
+      }).expect(404, cb);
+    });
+  });
+
   describe('GET /time', ()=> {
     it('should return a list of time entries', (cb) => {
       request.get('/time').expect([
