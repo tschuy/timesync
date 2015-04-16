@@ -318,6 +318,13 @@ app.use(_.get('/time/:timeid', function *(timeid) {
     this.body = time;
 }));
 
+app.use(_.delete('/time/:timeid', function *(timeid) {
+    var time = (yield this.knex('time_entries').where('id', timeid))[0];
+    if (!time) this.throw(404, errorObjectNotFound('time entry'));
+    yield this.knex('time_entries').where('id', timeid).del();
+    this.body = time;
+}));
+
 
 var port = process.env.TIMESYNC_PORT || 3000;
 app.listen(port);
