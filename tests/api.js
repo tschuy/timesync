@@ -61,11 +61,19 @@ describe('api', function() {
     it('should delete the user profile for an existing user', (cb) => {
       request.delete('/users/1').expect(function(res) {
         assert.deepEqual(res.body, { id: 1, username: 'deanj' });
-      }).expect(200, cb);
+      }).expect(200, cb)
+      .end(() => {
+          request.get('/users/1')
+          .expect(function(res) {
+            assert.deepEqual(
+              JSON.parse(res.error.text),
+              {error: "Object not found", errno: 1, text:"Invalid user"});
+          }).expect(404, cb);
+        });;
     });
   });
 
-  describe('GET /users/42', ()=> {
+  describe('DELETE /users/42', ()=> {
     it('should return 404 for a non-existent user', (cb) => {
       request.delete('/users/42').expect(function(res) {
         assert.deepEqual(
@@ -145,6 +153,36 @@ describe('api', function() {
           "errno":1,
           "text":"Invalid project"
         });
+      }).expect(404, cb);
+    });
+  });
+
+  describe('DELETE /projects/1', ()=> {
+    it('should delete the project for an existing project', (cb) => {
+      request.delete('/projects/1').expect({
+           "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
+           "name":"Ganeti Web Manager",
+           "slug":"gwm",
+           "owner": 2,
+           "id": 1
+      }).expect(200, cb)
+      .end(() => {
+          request.get('/projects/1')
+          .expect(function(res) {
+            assert.deepEqual(
+              JSON.parse(res.error.text),
+              {error: "Object not found", errno: 1, text:"Invalid project"});
+          }).expect(404, cb);
+        });;
+    });
+  });
+
+  describe('DELETE /projects/42', ()=> {
+    it('should return 404 for a non-existent project', (cb) => {
+      request.delete('/projects/42').expect(function(res) {
+        assert.deepEqual(
+          JSON.parse(res.error.text),
+          {error: "Object not found", errno: 1, text:"Invalid project"});
       }).expect(404, cb);
     });
   });
