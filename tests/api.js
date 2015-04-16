@@ -256,23 +256,6 @@ describe('api', function() {
     });
   });
 
-  describe('GET /time/1', ()=> {
-    it('should return the first time entry', (cb) => {
-      request.get('/time/1').expect({
-        "duration":12,
-        "user": 2,
-        "project": 3,
-        "activity": 2,
-        "notes":"",
-        "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
-        "date_worked":null,
-        "created_at":null,
-        "updated_at":null,
-        "id": 1
-      }).expect(200, cb);
-    });
-  });
-
   describe('POST /projects/add', ()=> {
     it('should add a new project for Working Waterfronts', (cb) => {
       request
@@ -525,6 +508,41 @@ describe('api', function() {
             "text": "Invalid time entry"
           });
         }).end(cb);
+    });
+  });
+
+  describe('DELETE /time/1', ()=> {
+    it('should delete the time entry for an existing time entry', (cb) => {
+      request.delete('/time/1').expect({
+          "duration":12,
+          "user": 2,
+          "project": 3,
+          "activity": 2,
+          "notes": "",
+          "issue_uri": "https://github.com/osu-cass/whats-fresh-api/issues/56",
+          "date_worked": null,
+          "created_at": null,
+          "updated_at": null,
+          "id": 1
+        }).expect(200, cb)
+      .end(() => {
+          request.get('/time/1')
+          .expect(function(res) {
+            assert.deepEqual(
+              JSON.parse(res.error.text),
+              {error: "Object not found", errno: 1, text:"Invalid time entry"});
+          }).expect(404, cb);
+        });;
+    });
+  });
+
+  describe('DELETE /time/42', ()=> {
+    it('should return 404 for a non-existent time entry', (cb) => {
+      request.delete('/time/42').expect(function(res) {
+        assert.deepEqual(
+          JSON.parse(res.error.text),
+          {error: "Object not found", errno: 1, text:"Invalid time entry"});
+      }).expect(404, cb);
     });
   });
 
