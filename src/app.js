@@ -180,6 +180,13 @@ app.use(_.get('/projects/:projectid', function *(projectid) {
     this.body = project;
 }));
 
+app.use(_.delete('/projects/:projectid', function *(projectid) {
+    var project = (yield this.knex('projects').where('id', projectid))[0];
+    if (!project) this.throw(404, errorObjectNotFound('project'));
+    yield this.knex('projects').where('id', projectid).del();
+    this.body = project;
+}));
+
 // Activities
 app.use(_.get('/activities', function *() {
     this.body = yield this.knex('activities');
