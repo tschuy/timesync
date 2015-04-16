@@ -34,7 +34,7 @@ describe('POST /time/add', ()=> {
       .post('/time/add?activity=doc&project=gwm&notes=notes&duration=54&user=deanj&issue_uri=https%3a%2f%2fgithub.com%2fosuosl%2fganeti_webmgr%2fissues%2f1')
       .expect(function(res) {
         var result = JSON.parse(res.body);
-        delete result['created_at'];
+        delete result.created_at;
         assert.deepEqual(
           result,
           {
@@ -49,7 +49,7 @@ describe('POST /time/add', ()=> {
             'id': 2
         });
       }).expect(200, () => {
-        var sent_time =  (new Date).getTime();
+        var sent_time =  (new Date()).getTime();
         request.get('/time/2').expect(function(res){
           var result = JSON.parse(res.text);
           if(Math.abs(sent_time - result.created_at) > 100) {
@@ -58,8 +58,8 @@ describe('POST /time/add', ()=> {
           if(Math.abs(sent_time - result.date_worked) > 100) {
             assert.equal(sent_time, result.date_worked);
           }
-          delete result['created_at'];
-          delete result['date_worked'];
+          delete result.created_at;
+          delete result.date_worked;
           var expected_result = {
             'issue_uri': 'https://github.com/osuosl/ganeti_webmgr/issues/1',
             'user': 1,
@@ -131,7 +131,7 @@ describe('DELETE /time/1', ()=> {
             JSON.parse(res.error.text),
             {error: "Object not found", errno: 1, text:"Invalid time entry"});
         }).expect(404, cb);
-      });;
+      });
   });
 });
 

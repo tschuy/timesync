@@ -67,7 +67,7 @@ describe('DELETE /activities/1', ()=> {
             JSON.parse(res.error.text),
             {error: "Object not found", errno: 1, text:"Invalid activity"});
         }).expect(404, cb);
-      });;
+      });
   });
 });
 

@@ -77,7 +77,7 @@ describe('DELETE /projects/1', ()=> {
             JSON.parse(res.error.text),
             {error: "Object not found", errno: 1, text:"Invalid project"});
         }).expect(404, cb);
-      });;
+      });
   });
 });
 
